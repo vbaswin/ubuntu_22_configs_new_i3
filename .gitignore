@@ -11,6 +11,7 @@
 !/picom/
 !/polybar/
 !/tmux/
+!/corne_v4_1_ufs/
 
 # 4. Whitelist specific files in the root
 !/redshift.conf
