@@ -1,0 +1,77 @@
+format = """
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$git_metrics\
+${custom.distrobox}\
+$fill\
+$cmd_duration\
+$time\
+$line_break\
+$character"""
+
+[directory]
+truncation_length = 4
+truncation_symbol = '../'
+truncate_to_repo = true
+style = '#95a7d7'
+
+[git_branch]
+format = '[$branch]($style)'
+style = '#b251db'
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bright-black"
+
+[git_status]
+format = " [[($conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
+ahead = '⇡${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+behind = '⇣${count}'
+conflicted = "="
+untracked = "?"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+stashed = "$"
+style = 'cyan'
+disabled = false
+
+[git_metrics]
+format = '([++$added]($added_style) )([--$deleted]($deleted_style) )'
+disabled = false
+added_style = '#b3cd91'
+deleted_style = '#ec83a0'
+
+[fill]
+symbol = ' '
+
+[cmd_duration]
+min_time = 0
+show_milliseconds = true
+format = '[$duration]($style)'
+# style = '#b8905d'
+style = '#c6b390'
+
+[time]
+disabled = false
+format = ' [$time]($style)'
+style = 'bright-black'
+
+[character]
+success_symbol = "[❯](#b3cd91)"
+error_symbol = "[❯](#ff5c81)"
+vimcmd_symbol = "[❮](green)"
+
+[custom.distrobox]
+description = "Show when inside a Distrobox container"
+# "when" checks if the variable is not empty
+when = 'test -n "$CONTAINER_ID"'
+# This command just prints the label or the specific container name if you prefer
+command = "echo '📦' $CONTAINER_ID"
+style = "bold red"
+format = '[$output]($style) '
+shell = ["bash", "--noprofile", "--norc"]

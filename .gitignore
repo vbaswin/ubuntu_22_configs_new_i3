@@ -1,0 +1,18 @@
+# 1. Ignore everything in this directory
+*
+
+# 2. Keep the gitignore file itself
+!.gitignore
+
+# 3. Whitelist specific folders/files
+!i3/
+!kitty/
+!nvim/
+!picom/
+!polybar/
+!redshift.conf
+!tmux/
+
+# Note: Starship usually uses starship.toml. 
+# If you have a folder, use !starship/ instead.
+!starship.toml
