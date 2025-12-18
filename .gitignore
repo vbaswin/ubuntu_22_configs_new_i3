@@ -12,6 +12,7 @@
 !/polybar/
 !/tmux/
 !/corne_v4_1_ufs/
+!/qmk_vial_layouts/
 
 # 4. Whitelist specific files in the root
 !/redshift.conf
