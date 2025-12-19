@@ -44,50 +44,6 @@ FALLBACK_BEAM = int(os.environ.get("BEAM_SIZE", "5"))
 recording_process = None
 
 
-def get_pulse_input_source():
-    """Detect the default PulseAudio input source"""
-    try:
-        # Try to get the default source
-        result = subprocess.run(
-            ["pactl", "get-default-source"],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
-        
-        if result.returncode == 0 and result.stdout.strip():
-            source = result.stdout.strip()
-            logging.info(f"Found default PulseAudio source: {source}")
-            return source
-    except Exception as e:
-        logging.warning(f"Could not get default source: {e}")
-    
-    try:
-        # Fallback: list all sources and find first input device
-        result = subprocess.run(
-            ["pactl", "list", "short", "sources"],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
-        
-        if result.returncode == 0:
-            for line in result.stdout.split('\n'):
-                # Look for input devices (not monitor devices)
-                if line and 'input' in line.lower() and 'monitor' not in line.lower():
-                    parts = line.split()
-                    if len(parts) >= 2:
-                        source = parts[1]
-                        logging.info(f"Found input source: {source}")
-                        return source
-    except Exception as e:
-        logging.warning(f"Could not list sources: {e}")
-    
-    # Ultimate fallback
-    logging.warning("Using 'default' as fallback source")
-    return "default"
-
-
 class RecordingGUI:
     def __init__(self):
         self.root = tk.Tk()
@@ -154,13 +110,6 @@ class RecordingGUI:
             # Stop recording
             stop_recording()
             
-            # Check if file exists
-            if not os.path.exists(WAVFILE):
-                raise Exception("Recording file was not created")
-            
-            if os.path.getsize(WAVFILE) < 1000:
-                raise Exception("Recording file is too small (no audio captured)")
-            
             # Trim silence
             audio_file = silence_trim(WAVFILE, TRIMMED_WAV)
             
@@ -215,79 +164,58 @@ class RecordingGUI:
     def run(self):
         self.root.mainloop()
 
-
 def start_recording():
-    """Start FFmpeg recording with detected PulseAudio source"""
+    """Start FFmpeg recording (Fixed for robustness)"""
     global recording_process
     
     # Remove old file
-    try:
-        if os.path.exists(WAVFILE):
+    if os.path.exists(WAVFILE):
+        try:
             os.remove(WAVFILE)
-    except:
-        pass
+        except OSError:
+            pass
     
-    # Detect the correct audio source
-    audio_source = get_pulse_input_source()
-    
-    # Start recording
+    # Use the exact command that worked in your manual test
     ffmpeg_cmd = [
         "ffmpeg", "-y",
-        "-f", "pulse", "-i", audio_source,
+        "-f", "pulse", "-i", "default",
         "-ac", "1", "-ar", "16000",
         "-vn", WAVFILE
     ]
     
-    logging.info(f"Starting recording with source: {audio_source}")
-    
+    # Start process with a new session ID to avoid signal conflicts
     recording_process = subprocess.Popen(
         ffmpeg_cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,  # Capture stderr for debugging
-        preexec_fn=os.setpgrp
+        stdout=subprocess.DEVNULL,  # Keep stdout clean
+        stderr=sys.stderr,          # PRINT ERRORS to terminal if it fails
+        start_new_session=True      # <--- The Critical Fix
     )
     
-    # Give FFmpeg a moment to start
+    # Wait a split second to ensure it started and created the file
     time.sleep(0.5)
-    
-    # Check if process is still running
     if recording_process.poll() is not None:
-        stderr = recording_process.stderr.read().decode('utf-8', errors='ignore')
-        logging.error(f"FFmpeg failed to start: {stderr}")
-        raise RuntimeError("FFmpeg failed to start recording")
-    
-    logging.info(f"Recording started (pid {recording_process.pid})")
-
+        logging.error("FFmpeg failed to start! Check terminal output above.")
+    else:
+        logging.info(f"Recording started (pid {recording_process.pid})")
 
 def stop_recording():
-    """Stop FFmpeg recording"""
+    """Stop FFmpeg recording cleanly"""
     global recording_process
     
     if recording_process:
+        # Send SIGINT (Ctrl+C) to the specific process
         try:
-            os.killpg(recording_process.pid, signal.SIGINT)
+            os.kill(recording_process.pid, signal.SIGINT)
         except ProcessLookupError:
-            try:
-                os.kill(recording_process.pid, signal.SIGINT)
-            except:
-                pass
+            pass
         
-        # Wait for process to finish
-        try:
-            recording_process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            logging.warning("Recording process did not terminate, killing...")
-            recording_process.kill()
-        
-        # Wait for file
+        # Wait up to 3 seconds for the file to be finalized
         waited = 0.0
-        while not os.path.exists(WAVFILE) and waited < 10.0:
-            time.sleep(0.2)
-            waited += 0.2
-        
+        while recording_process.poll() is None and waited < 3.0:
+            time.sleep(0.1)
+            waited += 0.1
+            
         logging.info("Recording stopped")
-
-
 def silence_trim(input_wav, output_wav):
     """Trim silence from audio"""
     try:
@@ -337,7 +265,7 @@ def run_faster_whisper_cpu(audio_file, model_name="medium", model_path=None, bea
     
     # FORCE CPU - no CUDA
     device = "cpu"
-    compute_type = "auto"  # Changed from "int8" to "auto" for better compatibility
+    compute_type = "int8"
     
     logging.info("FORCED CPU MODE - No CUDA")
     
@@ -368,7 +296,7 @@ def run_faster_whisper_cpu(audio_file, model_name="medium", model_path=None, bea
         )
     
     # Transcribe
-    logging.info(f"Transcribing (device=CPU, compute_type={compute_type}, beam_size={beam_size})...")
+    logging.info(f"Transcribing (device=CPU, compute_type=int8, beam_size={beam_size})...")
     segments, info = model.transcribe(
         audio_file,
         beam_size=beam_size,
@@ -409,13 +337,9 @@ def copy_and_paste(text):
 
 
 if __name__ == "__main__":
-    try:
-        # Start recording
-        start_recording()
-        
-        # Show GUI
-        gui = RecordingGUI()
-        gui.run()
-    except Exception as e:
-        logging.error(f"Failed to start: {e}")
-        sys.exit(1)
+    # Start recording
+    start_recording()
+    
+    # Show GUI
+    gui = RecordingGUI()
+    gui.run()
