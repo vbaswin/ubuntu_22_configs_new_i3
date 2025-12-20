@@ -192,6 +192,7 @@ bindsym $mod+Shift+p exec --no-startup-id polydoro reset
 
 
 bindsym Print exec flameshot gui
+bindsym $mod+Shift+g exec ~/.config/scripts/run_whisper.sh
 
 
 # Start i3bar to display a workspace bar (plus the system information i3status
@@ -200,7 +201,9 @@ bindsym Print exec flameshot gui
 #         status_command i3status
 # }
 
-exec --no-startup-id polydoro -d &
+# Clean up stale files and start daemon with notifications enabled
+exec --no-startup-id "rm -f /tmp/polydoro*.sock && NOTIFY=true polydoro -d"
+
 exec --no-startup-id redshift -l 8.44:77.01 -t 4500:2500 -m randr -v
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
