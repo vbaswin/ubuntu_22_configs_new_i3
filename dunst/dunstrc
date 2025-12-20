@@ -1,0 +1,77 @@
+[global]
+    # --- Display & Positioning ---
+    monitor = 0
+    follow = mouse
+    
+    # "origin" places the notification relative to the screen
+    origin = top-center
+    
+    # Offset: horizontal x vertical
+    # 0px horizontal (centered), 50px down from the top bar
+    offset = 0x50
+    
+    # Scale: (minimum_width, maximum_width)
+    # Increased width to 500 for better visibility
+    width = (300, 600)
+    
+    # Height allows the notification to grow based on text
+    height = 300
+    
+    indicate_hidden = yes
+    shrink = no
+    
+    # --- Spacing & Sizing ---
+    # Increased separation and padding for a "bigger" feel
+    separator_height = 2
+    padding = 30
+    horizontal_padding = 30
+    frame_width = 3
+    
+    # --- Aesthetics ---
+    frame_color = "#89B4FA"
+    separator_color = frame
+    
+    # Increased font size from 10 to 12
+    font = JetBrainsMono Nerd Font 12
+    
+    line_height = 6
+    markup = full
+    format = "<b>%s</b>\n%b"
+    alignment = left
+    vertical_alignment = center
+    show_age_threshold = 60
+    word_wrap = yes
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = yes
+    
+    # --- Icons ---
+    enable_recursive_icon_lookup = true
+    icon_theme = Papirus-Dark
+    icon_position = left
+    
+    # Increased icon sizes
+    min_icon_size = 64
+    max_icon_size = 96
+    
+    # Gap between icon and text
+    text_icon_padding = 30
+    
+    # --- History & Interaction ---
+    sticky_history = yes
+    history_length = 20
+    dmenu = /usr/bin/dmenu -p dunst:
+    browser = /usr/bin/firefox -new-tab
+    always_run_script = true
+    title = Dunst
+    class = Dunst
+    
+    # --- Corners ---
+    corner_radius = 12
+
+    # --- Mouse ---
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
