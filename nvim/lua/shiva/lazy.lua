@@ -13,7 +13,8 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup(
     {
-        { import = "shiva.plugins" }
+        { import = "shiva.plugins" },
+        { import = "shiva.plugins.lsp" }
         -- { import = "sethy.plugins.lsp" },
     },
     {

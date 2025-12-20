@@ -13,6 +13,7 @@ return {
 		local telescope = require("telescope")
 		local actions = require("telescope.actions")
 		local builtin = require("telescope.builtin")
+		local z_utils = require("telescope._extensions.zoxide.utils")
 		
 		local function fuzzy_search_folders()
 		builtin.find_files({
@@ -32,6 +33,7 @@ return {
 
 		telescope.load_extension("fzf")
 		telescope.load_extension("themes")
+		telescope.load_extension("zoxide")
 
 		telescope.setup({
 			defaults = {
@@ -53,17 +55,38 @@ return {
 					},
 				},
 			},
+			  zoxide = {
+				  prompt_title = "[ Walk to Directory ]",
+				  mappings = {
+					default = {
+					  action = function(selection)
+						vim.api.nvim_set_current_dir(selection.path)
+					  end,
+					  after_action = function(selection)
+						print("Directory changed to " .. selection.path)
+					  end
+					},
+				  },
+				},
 		})
 
 		 vim.keymap.set('n', '<leader>ff', function() builtin.find_files({ hidden = true }) end,  { desc = 'Telescope find files' })
-	  vim.keymap.set('n', '<leader>fg', function() builtin.live_grep({ additional_args = function(args) return vim.list_extend(args, { "--hidden" }) end, }) end,   { desc = 'Telescope live grep' })
-	  vim.keymap.set('n', '<leader>fb', builtin.buffers,     { desc = 'Telescope buffers' })
+
+	vim.keymap.set('n', '<leader>fg', function() 
+            builtin.live_grep({ 
+                additional_args = function(args) 
+                    return { "--hidden" } 
+                end 
+            }) 
+        end, { desc = 'Telescope live grep' })	  
+
+		vim.keymap.set('n', '<leader>fb', builtin.buffers,     { desc = 'Telescope buffers' })
 	  vim.keymap.set('n', '<leader>fh', builtin.help_tags,  { desc = 'Telescope help tags' })
 	  -- 3. The "Fuzzy CD" (Folder only search)
-vim.keymap.set("n", "<leader>fd", fuzzy_search_folders, { desc = "Search Folders & CD" })
+		vim.keymap.set("n", "<leader>fd", fuzzy_search_folders, { desc = "Search Folders & CD" })
 
--- 4. Zoxide (Jump to frequent folders)
-vim.keymap.set("n", "<leader>fz", telescope.extensions.zoxide.list, { desc = "Zoxide (Recent Folders)" })
+		-- 4. Zoxide (Jump to frequent folders)
+		vim.keymap.set("n", "<leader>fz", telescope.extensions.zoxide.list, { desc = "Zoxide (Recent Folders)" })
 		-- Keymaps
 		vim.keymap.set("n", "<leader>pr", "<cmd>Telescope oldfiles<CR>", { desc = "Fuzzy find recent files" })
 		vim.keymap.set("n", "<leader>pWs", function()
@@ -72,5 +95,10 @@ vim.keymap.set("n", "<leader>fz", telescope.extensions.zoxide.list, { desc = "Zo
 		end, { desc = "Find Connected Words under cursor" })
 
 		vim.keymap.set("n", "<leader>ths", "<cmd>Telescope themes<CR>", { noremap = true, silent = true, desc = "Theme Switcher" })
+		-- Find symbols (functions/vars) in the CURRENT file
+	vim.keymap.set('n', '<leader>fs', builtin.lsp_document_symbols, { desc = 'Find Symbols (Current File)' })
+
+	-- Find symbols (functions/vars) in the WHOLE project
+	vim.keymap.set('n', '<leader>fS', builtin.lsp_workspace_symbols, { desc = 'Find Symbols (Workspace)' })
     end,
 }
