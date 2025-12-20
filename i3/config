@@ -192,7 +192,7 @@ bindsym $mod+Shift+p exec --no-startup-id polydoro reset
 
 
 bindsym Print exec flameshot gui
-bindsym $mod+Shift+g exec ~/.config/scripts/run_whisper.sh
+bindsym $mod+Shift+g exec --no-startup-id python3 ~/.config/scripts/toggle_whisper.py
 
 
 # Start i3bar to display a workspace bar (plus the system information i3status
