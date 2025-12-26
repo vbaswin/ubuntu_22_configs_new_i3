@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Simple tmux sessionizer script
+# Opens fzf to select a directory and creates/switches to a tmux session
+
+# Find directories to search through (customize these paths to your needs)
+selected=$(find ~/projects ~/work ~ -mindepth 1 -maxdepth 1 -type d 2>/dev/null | fzf)
+
+# Exit if no directory was selected
+if [[ -z $selected ]]; then
+    exit 0
+fi
+
+# Create session name from directory basename, replacing dots with underscores
+selected_name=$(basename "$selected" | tr . _)
+
+# Check if tmux is running
+tmux_running=$(pgrep tmux)
+
+# Case 1: Not inside tmux and tmux is not running
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+    tmux new-session -s "$selected_name" -c "$selected"
+    exit 0
+fi
+
+# Case 2: Session doesn't exist, create it in detached mode
+if ! tmux has-session -t="$selected_name" 2> /dev/null; then
+    tmux new-session -ds "$selected_name" -c "$selected"
+fi
+
+# Case 3: Not inside tmux but tmux is running - attach to session
+if [[ -z $TMUX ]]; then
+    tmux attach-session -t "$selected_name"
+else
+    # Case 4: Inside tmux - switch to session
+    tmux switch-client -t "$selected_name"
+fi
