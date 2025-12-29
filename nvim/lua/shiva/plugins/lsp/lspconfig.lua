@@ -12,6 +12,17 @@ return {
 
         -- Define the list of servers you want to enable
         local servers = {
+			pyright = {
+                settings = {
+                    python = {
+                        analysis = {
+                            typeCheckingMode = "basic", -- "off", "basic", or "strict"
+                            autoSearchPaths = true,
+                            useLibraryCodeForTypes = true
+                        }
+                    }
+                }
+            },
             html = {},
             cssls = {},
             lua_ls = {
@@ -79,6 +90,7 @@ return {
         vim.api.nvim_create_autocmd("LspAttach", {
             group = vim.api.nvim_create_augroup("UserLspConfig", {}),
             callback = function(ev)
+
                 local opts = { buffer = ev.buf, silent = true }
                 opts.desc = "Show LSP references"
                 vim.keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
@@ -109,7 +121,7 @@ return {
                 vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
 
                 vim.keymap.set("i", "<C-h>", function()
-                    vim.lsp.buf.signature_help()
+                   vim.lsp.buf.signature_help()
                 end, opts)
             end,
         })

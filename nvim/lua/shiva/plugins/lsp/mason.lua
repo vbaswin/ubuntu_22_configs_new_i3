@@ -35,6 +35,7 @@ return {
             automatic_enable = false,
             -- servers for mason to install
             ensure_installed = {
+				"pyright",
                 "lua_ls",
                 "ts_ls", -- currently using a ts plugin
                 "html",
@@ -47,6 +48,7 @@ return {
                 "emmet_language_server",
                 -- "eslint",
                 "marksman",
+				"clangd"
             },
         })
 
