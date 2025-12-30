@@ -1,3 +1,2 @@
-require("shiva.core")
-require("shiva.lazy")
-
+-- bootstrap lazy.nvim, LazyVim and your plugins
+require("config.lazy")
