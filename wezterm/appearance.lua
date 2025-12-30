@@ -9,23 +9,18 @@ function module.setup(config)
 end
 
 wezterm.on('update-status', function(window, pane)
-  -- Grab the current workspace name
-  local workspace = window:active_workspace()
-
-  -- Use a specific Catppuccin Mocha color (Mauve: #cba6f7)
-  -- You can also use other Mocha colors like Lavender (#b4befe) or Rosewater (#f5e0dc)
-  local workspace_color = '#cba6f7'
+  local workspace = window:active_workspace() or 'default'
+  wezterm.log_info('Updating status for: ' .. workspace)
   
-  -- (Optional) If you want a different color for the 'default' workspace
+  local workspace_color = '#cba6f7'
   if workspace == 'default' then
-    workspace_color = '#f5e0dc' -- Mocha Rosewater
+    workspace_color = '#f5e0dc'
   end
-
-  -- Set the text on the left side of the tab bar
+  
   window:set_left_status(wezterm.format({
     { Foreground = { Color = workspace_color } },
     { Attribute = { Intensity = 'Bold' } },
-    { Text = '  [' .. workspace .. ']  ' },
+    { Text = ' [' .. workspace .. '] ' },
   }))
 end)
 

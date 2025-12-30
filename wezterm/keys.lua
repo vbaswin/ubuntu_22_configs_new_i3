@@ -106,10 +106,18 @@ config.keys = {
     key = "s",
     mods = "LEADER",
     action = sessions.save_state,  },
+	-- action =sessions.save_current_ws, },
 	{
     key = "r",
     mods = "LEADER",
     action = sessions.restore_state,  },
+	-- action =sessions.load_ws_with_fuzzy, },
+		--[[
+	{
+    key = "d",
+    mods = "LEADER",
+    action = sessions.delete_sessionr  },
+		--]]
 }
 config.key_tables = {
 	resize_pane = {
