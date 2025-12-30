@@ -18,6 +18,7 @@ module.save_state = wezterm.action_callback(function(win, pane)
 		-- initial_value = 'mera',        
 		action = wezterm.action_callback(function(window, pane, line)
             local session_name
+		wezterm.log_info("just checking the logs")
             
             -- If user pressed Enter without typing, use current workspace name
             if not line or line == "" then
@@ -38,11 +39,15 @@ module.save_state = wezterm.action_callback(function(win, pane)
                 end
             end
             
+		wezterm.log_info("session_name: " .. session_name)
+
             -- Save the window state with the session name
             -- Try to get and save the window state with error handling
             local success, result = pcall(function()
-                local window_state = resurrect.window_state.get_window_state(window)
-                resurrect.state_manager.save_state(window_state, session_name)
+				 -- Get the workspace state for the current workspace
+                local workspace_state = resurrect.workspace_state.get_workspace_state()
+                -- Save with the session name
+                resurrect.state_manager.save_state(workspace_state, session_name)
             end)
             
             if success then
