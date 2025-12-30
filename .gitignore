@@ -15,6 +15,7 @@
 !/qmk_vial_layouts/
 !/scripts/
 !/dunst/
+!/wezterm/
 
 # 4. Whitelist specific files in the root
 !/redshift.conf
