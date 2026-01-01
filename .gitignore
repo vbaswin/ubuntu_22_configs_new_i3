@@ -16,7 +16,9 @@
 !/scripts/
 !/dunst/
 !/wezterm/
+!/rofi/
 
 # 4. Whitelist specific files in the root
 !/redshift.conf
 !/starship.toml
+!/greenclip.toml
