@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Path specific to your machine
+AC_ONLINE="/sys/class/power_supply/ACAD/online"
+
+# Check if plugged in (1) or unplugged (0)
+# Default to 0 (Battery) if the file can't be read for some reason
+IS_PLUGGED_IN=0
+if [ -f "$AC_ONLINE" ]; then
+    IS_PLUGGED_IN=$(cat "$AC_ONLINE")
+fi
+
+if [ "$IS_PLUGGED_IN" -eq 1 ]; then
+    # --- PLUGGED IN: NVIDIA MODE ---
+    # export vars to force NVIDIA usage
+    export __NV_PRIME_RENDER_OFFLOAD=1
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    export __VK_LAYER_NV_optimus=NVIDIA_only
+    
+    # exec replaces the shell with wezterm, keeping the PID clean
+    exec wezterm "$@"
+else
+    # --- UNPLUGGED: INTEGRATED MODE ---
+    # Unset vars to ensure Integrated GPU usage
+    unset __NV_PRIME_RENDER_OFFLOAD
+    unset __GLX_VENDOR_LIBRARY_NAME
+    unset __VK_LAYER_NV_optimus
+    
+    exec wezterm "$@"
+fi
