@@ -106,7 +106,7 @@ function module.setup(config)
 
 		-- resize mode
 		{
-			key = "r",
+			key = "R",
 			mods = "LEADER",
 			action = act.ActivateKeyTable({
 				name = "resize_pane",
