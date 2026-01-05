@@ -1,0 +1,49 @@
+{
+    "terminals": [
+        {
+            "class": "Alacritty",
+            "command": "alacritty"
+        },
+        {
+            "class": "kitty",
+            "command": "kitty"
+        }
+    ],
+    "subprocesses": [
+        {
+            "name": "vim"
+        },
+        {
+            "name": "nvim",
+            "exclude_args": ["--embed"]
+        },
+        {
+            "name": "cmus",
+            "launch_command": "{command} && i3-msg kill"
+        },
+        {
+            "name": "ssh"
+        },
+        {
+            "name": "man"
+        },
+        {
+            "name": "ipython"
+        },
+        {
+            "name": "pipenv",
+            "include_args": ["shell"]
+        },
+        {
+            "name": "su"
+        },
+        {
+            "name": "sudo",
+            "include_args": ["-i", "--login"]
+        }
+    ],
+    "web_browsers": [
+        "firefox"
+    ],
+    "enabled_plugins": {}
+}

@@ -5,7 +5,6 @@
 !/.gitignore
 
 # 3. Whitelist your config folders (Git will enter these and track everything inside)
-!/i3/
 !/kitty/
 !/nvim/
 !/picom/
@@ -17,8 +16,11 @@
 !/dunst/
 !/wezterm/
 !/rofi/
+!/i3-restore/
+
 
 # 4. Whitelist specific files in the root
 !/redshift.conf
 !/starship.toml
 !/greenclip.toml
+!/i3/config
