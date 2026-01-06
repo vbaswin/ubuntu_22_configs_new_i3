@@ -11,12 +11,13 @@
 !/polybar/
 !/tmux/
 !/corne_v4_1_ufs/
-!/qmk_vial_layouts/
+!/qmk/
 !/scripts/
 !/dunst/
 !/wezterm/
 !/rofi/
 !/i3-restore/
+!/imp_commands/
 
 
 # 4. Whitelist specific files in the root
