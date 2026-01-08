@@ -61,6 +61,11 @@ vim.keymap.set("n", "<leader>fd", function()
                     cwd = vim.env.HOME
                     search_folders()
                 end,
+                -- Ctrl+d: Change CWD (Directory)
+                ["ctrl-d"] = function(selected)
+                    vim.cmd("cd " .. selected[1])
+                    vim.notify("Root set to: " .. selected[1])
+                end,
             },
         })
     end
