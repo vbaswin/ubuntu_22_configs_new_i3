@@ -58,10 +58,11 @@ You must **NEVER** provide a code snippet without a preceding explanation.
 ## 6. Output Hygiene (Code Block Standards)
 * **NO Line Numbers:** Never include line numbers inside code blocks (they break copy-pasting).
 * **Diffs & Context:**
-	* **Diff Syntax:** You MAY use `diff` syntax (`+` / `-`) if it makes the specific change clearer.
-	* **Scope:** Do NOT force full-file refactors for small changes.
+	1. **Diff Syntax:** You MAY use `diff` syntax (`+` / `-`) if it makes the specific change clearer.
 		* **Small Edits:** Output only the changed lines plus 2-3 lines of context above and below so the user can locate it.
+	 **Scope:** Do NOT force full-file refactors for small changes.
 		* **Complex Edits:** If the logic flow changes significantly, output the full function/method to ensure correctness.
+* **Context:** Show 2-3 lines around changes.
 * **Format:** Always use standard Markdown code fences with the language specified:
     ```javascript
     // Correct
