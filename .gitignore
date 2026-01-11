@@ -18,6 +18,7 @@
 !/rofi/
 !/i3-restore/
 !/imp_commands/
+!/clang-format/
 
 
 # 4. Whitelist specific files in the root
