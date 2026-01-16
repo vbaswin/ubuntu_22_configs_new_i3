@@ -9,5 +9,5 @@ o.tabstop = 4 -- a real tab is 4 columns wide
 o.shiftwidth = 4 -- indentation level for >> and autoindent
 o.softtabstop = 4 -- editing: insert/delete behaves like 4
 o.expandtab = true -- USE TABS (do not convert tabs to spaces)
-o.wrap = false
+o.wrap = true
 o.textwidth = 0
