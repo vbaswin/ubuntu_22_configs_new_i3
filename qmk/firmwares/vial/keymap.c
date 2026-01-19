@@ -8,9 +8,9 @@
 // It overrides whatever is in the EEPROM/Settings to ensure
 // your preferred typing rule is ALWAYS active.
 void keyboard_post_init_user(void) {
-  // QS.tapping Bit 1 (Value 2) controls "Ignore Mod Tap Interrupt"
-  // (technically it disables 'Hold On Other Key Press')
-  QS.tapping |= 2;
+    // QS.tapping Bit 1 (Value 2) controls "Ignore Mod Tap Interrupt"
+    // (technically it disables 'Hold On Other Key Press')
+    QS.tapping |= 2;
 }
 
 #ifdef LAYOUT_split_3x6_3_ex2
@@ -55,7 +55,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         //,--------------------------------------------------------------.			,--------------------------------------------------------------.
         XXXXXXX, LSFT(KC_1), LSFT(KC_2), LSFT(KC_3), LSFT(KC_4), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, LSFT(KC_5), LSFT(KC_6), LSFT(KC_7), LSFT(KC_GRV), XXXXXXX,
         //|--------+--------+--------+--------+--------+--------+--------|			|--------+--------+--------+--------+--------+--------+--------|
-        XXXXXXX, LSFT(KC_QUOT), KC_LBRC, LSFT(KC_LBRC), LSFT(KC_9), LSFT(KC_COMM), XXXXXXX, XXXXXXX, LSFT(KC_DOT), LSFT(KC_0), LSFT(KC_RBRC), KC_RBRC, KC_QUOT, XXXXXXX,
+        KC_GRV, LSFT(KC_QUOT), KC_LBRC, LSFT(KC_LBRC), LSFT(KC_9), LSFT(KC_COMM), XXXXXXX, XXXXXXX, LSFT(KC_DOT), LSFT(KC_0), LSFT(KC_RBRC), KC_RBRC, KC_QUOT, XXXXXXX,
         //|--------+--------+--------+--------+--------+--------+--------'		`	--------+--------+--------+--------+--------+--------+--------|
         XXXXXXX, LSFT(KC_BSLS), KC_BSLS, LSFT(KC_MINS), KC_EQL, XXXXXXX, XXXXXXX, KC_MINS, LSFT(KC_EQL), LSFT(KC_8), LSFT(KC_SLSH), XXXXXXX,
         //|--------+--------+--------+--------+--------+--------+--------.			,--------+--------+--------+--------+--------+--------+--------|
@@ -78,7 +78,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         //,--------------------------------------------------------------.  ,--------------------------------------------------------------.
         XXXXXXX, KC_F12, KC_F11, KC_F10, KC_F9, XXXXXXX, XXXXXXX, EE_CLR, XXXXXXX, KC_BRID, KC_BRIU, KC_VOLD, KC_VOLU, XXXXXXX,
         //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-        XXXXXXX, KC_F4, KC_F3, KC_F2, KC_F1, XXXXXXX, XXXXXXX, XXXXXXX, RGB_TOG, KC_WBAK, KC_WFWD, KC_PSCR, KC_MUTE, XXXXXXX,
+        XXXXXXX, KC_F4, KC_F3, KC_F2, KC_F1, XXXXXXX, XXXXXXX, QK_RBT, RGB_TOG, KC_WBAK, KC_WFWD, KC_PSCR, KC_MUTE, XXXXXXX,
         //|--------+--------+--------+--------+--------+--------+--------'  `--------+--------+--------+--------+--------+--------+--------|
         XXXXXXX, KC_F8, KC_F7, KC_F6, KC_F5, XXXXXXX, RGB_MOD, RGB_VAD, RGB_VAI, RGB_HUD, RGB_HUI, XXXXXXX,
         //|--------+--------+--------+--------+--------+--------+--------.  ,--------+--------+--------+--------+--------+--------+--------|

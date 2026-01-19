@@ -105,3 +105,20 @@ end, {})
 
 -- Map it to <leader>W (Capital W)
 vim.keymap.set("n", "<leader>W", ":SaveSelect<CR>", { desc = "Interactive Save Buffers" })
+
+local dap = require("dap")
+local dapui = require("dapui")
+
+-- Variable to store the "Last Used" configuration for this session
+local last_debug_config = nil
+-- dap ui
+-- 1. Restart (Most used)
+vim.keymap.set("n", "<leader>dr", function()
+    dap.restart()
+    vim.notify("Restarting Debugger...", vim.log.levels.INFO)
+end, { desc = "Debug: Restart Session" })
+
+-- 2. Toggle REPL (Moved to Shift+R)
+vim.keymap.set("n", "<leader>dR", function()
+    dap.repl.toggle()
+end, { desc = "Debug: Toggle REPL" })
