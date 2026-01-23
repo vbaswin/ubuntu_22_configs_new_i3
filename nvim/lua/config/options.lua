@@ -11,3 +11,5 @@ o.softtabstop = 4 -- editing: insert/delete behaves like 4
 o.expandtab = true -- USE TABS (do not convert tabs to spaces)
 o.wrap = true
 o.textwidth = 0
+
+o.makeprg = "just"
