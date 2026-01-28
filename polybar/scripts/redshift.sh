@@ -1,132 +1,136 @@
 #!/bin/bash
 
+# ==============================================================================
+# Redshift Polybar Controller (Fixed)
+# - Uses state files for reliable tracking
+# - Manual mode persists screen tint without daemon
+# ==============================================================================
+
 # --- Configuration ---
-# Your specific location settings
 LAT="8.44"
 LON="77.01"
-# Default Day/Night for Auto Mode
-AUTO_DAY="4500"
+AUTO_DAY="3500"
 AUTO_NIGHT="2500"
-# Steps for scrolling (in Kelvin)
-STEP=250
+STEP=100
 MIN=1000
 MAX=9000
 
-# State file to track mode
-STATE_FILE="/tmp/redshift_polybar_state"
+# --- State Files ---
+# ACTIVE_FILE: "on" or "off" - tracks if redshift effect is active
+# MODE_FILE: "auto" or "manual"
+# TEMP_FILE: current temperature value
+STATE_DIR="/tmp/redshift_polybar"
+ACTIVE_FILE="$STATE_DIR/active"
+MODE_FILE="$STATE_DIR/mode"
+TEMP_FILE="$STATE_DIR/temp"
+
+# Ensure state directory exists
+mkdir -p "$STATE_DIR"
 
 # --- Functions ---
 
-get_temp() {
-    # Try to grab the current temp from redshift output
-    # Use a more flexible pattern to match 3-5 digit temperatures
-    redshift -p 2>/dev/null | grep "Color temperature" | grep -oE "[0-9]{3,5}" | head -n1
+is_active() {
+    [ -f "$ACTIVE_FILE" ] && [ "$(cat "$ACTIVE_FILE")" = "on" ] && echo "on" || echo "off"
 }
 
-check_status() {
-    if pgrep -x "redshift" > /dev/null; then
-        echo "on"
-    else
-        echo "off"
-    fi
+set_active() {
+    echo "$1" >"$ACTIVE_FILE"
 }
 
 get_mode() {
-    # Read the mode from state file (auto or manual)
-    if [ -f "$STATE_FILE" ]; then
-        cat "$STATE_FILE"
-    else
-        echo "auto"
-    fi
+    [ -f "$MODE_FILE" ] && cat "$MODE_FILE" || echo "auto"
 }
 
 set_mode() {
-    echo "$1" > "$STATE_FILE"
+    echo "$1" >"$MODE_FILE"
 }
 
-# --- Handle User Actions ---
+get_temp() {
+    [ -f "$TEMP_FILE" ] && cat "$TEMP_FILE" || echo "$AUTO_DAY"
+}
+
+set_temp() {
+    echo "$1" >"$TEMP_FILE"
+}
+
+# Check if redshift daemon is running (for auto mode)
+daemon_running() {
+    pgrep -x "redshift" >/dev/null && echo "yes" || echo "no"
+}
+
+# --- Main Logic ---
 
 case "$1" in
-    status)
-        STATUS=$(check_status)
-        if [ "$STATUS" = "on" ]; then
-            TEMP=$(get_temp)
-            MODE=$(get_mode)
-            
-            if [ -z "$TEMP" ]; then
-                # Can't get temperature, show generic on status
-                echo "%{F#F9E2AF} On%{F-}"
-            else
-                # Show Temperature with K suffix
-                if [ "$MODE" = "manual" ]; then
-                    # Manual mode indicator
-                    echo "%{F#F9E2AF} ${TEMP}K [M]%{F-}"
-                else
-                    # Auto mode
-                    echo "%{F#F9E2AF} ${TEMP}K%{F-}"
-                fi
-            fi
+status)
+    if [ "$(is_active)" = "on" ]; then
+        TEMP=$(get_temp)
+        MODE=$(get_mode)
+        if [ "$MODE" = "manual" ]; then
+            echo "%{F#F9E2AF} ${TEMP}K [M]%{F-}"
         else
-            echo "%{F#585B70} Off%{F-}"
+            echo "%{F#F9E2AF} ${TEMP}K%{F-}"
         fi
-        ;;
+    else
+        echo "%{F#585B70} Off%{F-}"
+    fi
+    ;;
 
-    toggle)
-        if [ "$(check_status)" = "on" ]; then
-            # Kill redshift and clear state
-            pkill -x redshift
-            rm -f "$STATE_FILE"
-        else
-            # Start in Auto mode
-            pkill -x redshift  # Ensure clean state
-            sleep 0.2
-            redshift -l $LAT:$LON -t $AUTO_DAY:$AUTO_NIGHT -m randr &
-            set_mode "auto"
-        fi
-        ;;
-
-    auto)
-        # Switch to automatic mode
-        pkill -x redshift
-        sleep 0.3
-        redshift -l $LAT:$LON -t $AUTO_DAY:$AUTO_NIGHT -m randr &
-        set_mode "auto"
-        ;;
-
-    increase|decrease)
-        # Get current numeric temp or default
-        CURRENT=$(get_temp)
-        
-        # If we can't get current temp or redshift is off, start with default
-        if [ -z "$CURRENT" ] || [ "$(check_status)" = "off" ]; then
-            CURRENT=4500
-        fi
-
-        # Calculate new temp
-        if [ "$1" = "increase" ]; then
-            NEW=$((CURRENT + STEP))
-        else
-            NEW=$((CURRENT - STEP))
-        fi
-
-        # Clamp values
-        if [ "$NEW" -gt "$MAX" ]; then NEW=$MAX; fi
-        if [ "$NEW" -lt "$MIN" ]; then NEW=$MIN; fi
-
-        # Kill any running redshift first
-        pkill -x redshift
+toggle)
+    if [ "$(is_active)" = "on" ]; then
+        # Turn OFF
+        pkill -x redshift 2>/dev/null
+        redshift -x 2>/dev/null # Reset screen to normal
+        set_active "off"
+        rm -f "$MODE_FILE" "$TEMP_FILE"
+    else
+        # Turn ON in auto mode
+        pkill -x redshift 2>/dev/null
         sleep 0.2
+        redshift -l "$LAT:$LON" -t "$AUTO_DAY:$AUTO_NIGHT" -m randr &
+        set_active "on"
+        set_mode "auto"
+        set_temp "$AUTO_DAY"
+    fi
+    ;;
 
-        # Apply Manual Mode with one-shot command
-        # Using -P to clear existing adjustments, -O for one-shot temp
-        redshift -P -O $NEW -m randr
-        
-        # Mark as manual mode
-        set_mode "manual"
-        ;;
+auto)
+    # Switch to auto mode
+    pkill -x redshift 2>/dev/null
+    sleep 0.2
+    redshift -l "$LAT:$LON" -t "$AUTO_DAY:$AUTO_NIGHT" -m randr &
+    set_active "on"
+    set_mode "auto"
+    set_temp "$AUTO_DAY"
+    ;;
 
-    *)
-        echo "Usage: $0 {status|toggle|auto|increase|decrease}"
-        exit 1
-        ;;
+increase | decrease)
+    CURRENT=$(get_temp)
+
+    if [ "$1" = "increase" ]; then
+        NEW=$((CURRENT + STEP))
+    else
+        NEW=$((CURRENT - STEP))
+    fi
+
+    # Clamp values
+    [ "$NEW" -gt "$MAX" ] && NEW=$MAX
+    [ "$NEW" -lt "$MIN" ] && NEW=$MIN
+
+    # Kill any running daemon
+    pkill -x redshift 2>/dev/null
+    sleep 0.1
+
+    # Apply one-shot temperature (persists even after redshift exits)
+    redshift -P -O "$NEW" -m randr
+
+    # Update state
+    set_active "on"
+    set_mode "manual"
+    set_temp "$NEW"
+    ;;
+
+*)
+    echo "Usage: $0 {status|toggle|auto|increase|decrease}"
+    exit 1
+    ;;
 esac

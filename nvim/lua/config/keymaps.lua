@@ -6,7 +6,6 @@
 local map = vim.keymap.set
 local user_finder = require("user.finder")
 local user_editor = require("user.editor")
-local dap = require("dap")
 
 -- -------------------------------------------------
 -- Clipboard Operations
@@ -45,6 +44,7 @@ local last_debug_config = nil
 -- dap ui
 -- 1. Restart (Most used)
 vim.keymap.set("n", "<leader>dr", function()
+    local dap = require("dap")
     dap.restart()
     vim.notify("Restarting Debugger...", vim.log.levels.INFO)
 end, { desc = "Debug: Restart Session" })

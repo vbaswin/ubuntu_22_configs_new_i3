@@ -13,3 +13,4 @@ o.wrap = true
 o.textwidth = 0
 
 o.makeprg = "just"
+vim.env.COLUMNS = "999"
