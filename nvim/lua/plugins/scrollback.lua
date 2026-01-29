@@ -6,20 +6,47 @@ return {
         cmd = { "KittyScrollbackGenerateKittens", "KittyScrollbackCheckHealth" },
         event = { "User KittyScrollbackLaunch" },
         config = function()
+            local ksb_api = require("kitty-scrollback.api")
+
             require("kitty-scrollback").setup({
-                -- Ensure the paste window uses the correct register
                 paste_window = {
-                    yank_register_enabled = true, -- Enable yanking to paste window
-                    yank_register = "+", -- Use system clipboard register
+                    yank_register_enabled = false,
+                    yank_register = "z", -- Obscure register we never use
                 },
-                -- Keymaps (these are defaults, shown for clarity)
-                keymaps_enabled = true,
-                -- Visual feedback that operations succeeded
+                keymaps_enabled = false, -- Disable plugin's default keymaps
                 visual_selection_highlight_mode = "nvim",
+
+                callbacks = {
+                    after_ready = function(kitty_data, opts)
+                        -- Visual mode: yank to UNNAMED register, then copy via OSC52
+                        vim.keymap.set({ "v", "x" }, "y", function()
+                            vim.cmd("normal! y")
+                            local lines = vim.fn.getreg('"', 1, true)
+                            require("vim.ui.clipboard.osc52").copy("+")(lines)
+                        end, {
+                            buffer = true,
+                            desc = "Yank to clipboard (stay in scrollback)",
+                        })
+
+                        -- Yank AND close (when you want original behavior)
+                        vim.keymap.set({ "v", "x" }, "<CR>", function()
+                            vim.cmd('normal! "+y')
+                        end, {
+                            buffer = true,
+                            desc = "Yank to clipboard and close scrollback",
+                        })
+
+                        -- Normal mode: 'q' to quit
+                        vim.keymap.set("n", "q", function()
+                            ksb_api.close_or_quit_all()
+                        end, {
+                            buffer = true,
+                            desc = "Close scrollback buffer",
+                        })
+                    end,
+                },
             })
 
-            -- Force OSC 52 clipboard when inside kitty-scrollback
-            -- This ensures "+y works correctly
             vim.g.clipboard = {
                 name = "OSC 52 (kitty-scrollback)",
                 copy = {
