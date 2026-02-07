@@ -19,10 +19,13 @@
 !/i3-restore/
 !/imp_commands/
 !/clang-format/
+!/i3
+!/systemd/
+!/cus-pomodoro/
+
 
 
 # 4. Whitelist specific files in the root
 !/redshift.conf
 !/starship.toml
 !/greenclip.toml
-!/i3/config

@@ -1,0 +1,30 @@
+default: stop build start break
+    @echo "✓ Ready. Test with: just break"
+
+# Compile
+build:
+    g++ -std=c++17 -O2 -o pomodoro pomodoro.cpp -pthread
+
+# Stop daemon via systemd (proper way)
+stop:
+    -@systemctl --user stop pomodoro.service 2>/dev/null
+    @sleep 0.3
+    -@rm -f /tmp/pomodoro.pid /tmp/pomodoro.state /tmp/pomodoro_debug.log
+
+# Start daemon
+start:
+    systemctl --user start pomodoro.service
+    @sleep 0.5
+    @echo "Daemon PID: $$(cat /tmp/pomodoro.pid 2>/dev/null || echo 'starting...')"
+
+# Test break popup
+break:
+    ./pomodoro --break
+
+# Check status
+status:
+    @cat /tmp/pomodoro.state 2>/dev/null || echo "not running"
+
+# View debug log
+log:
+    @cat /tmp/pomodoro_debug.log 2>/dev/null || echo "no log"

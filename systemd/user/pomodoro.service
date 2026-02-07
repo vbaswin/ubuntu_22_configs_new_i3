@@ -1,0 +1,19 @@
+[Unit]
+Description=Pomodoro Timer Daemon
+Documentation=man:pomodoro(1)
+After=graphical-session.target
+
+[Service]
+Type=forking
+ExecStart=/home/vbaswin/.config/cus-pomodoro/pomodoro --daemon
+ExecStop=/home/vbaswin/.config/cus-pomodoro/pomodoro --stop
+PIDFile=/tmp/pomodoro.pid
+Restart=on-failure
+RestartSec=5
+
+# Environment for rofi/display access
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/run/user/1000/gdm/Xauthority
+
+[Install]
+WantedBy=default.target   

@@ -1,0 +1,75 @@
+/* ==========================================================
+* Pomodoro Break Screen — Fullscreen Overlay
+* Usage: rofi -e "Break Time" -theme ~/.config/rofi/pomodoro.rasi
+* Press Escape or Enter to dismiss.
+* ========================================================== */
+configuration {
+    timeout {
+        action: "";
+        delay:  0;
+    }
+}
+
+
+/* ── Global Defaults ── */
+* {
+    /* Catppuccin Mocha palette */
+    bg:             rgba(30, 30, 46, 0.92);
+    bg-alt:         rgba(49, 50, 68, 0.0);
+    fg:             #cdd6f4;
+    accent:         #f38ba8;
+
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+/* ── Fullscreen Window ── */
+window {
+    /* This is the key property — takes over the entire screen */
+    fullscreen:       true;
+    background-color: @bg;
+
+    /* No border on fullscreen — the overlay IS the UI */
+    border:           0px;
+    border-radius:    0px;
+    padding:          0px;
+}
+
+/* ── Main Container ── */
+mainbox {
+    /* Center content vertically by pushing it with padding */
+    /* On 1080p, ~40% from top puts text at visual center */
+    padding:          35% 10% 0% 10%;
+    background-color: transparent;
+    children:         [ message ];
+}
+
+/* ── Message Container ── */
+message {
+    background-color: transparent;
+    border:           0px;
+    padding:          0px;
+}
+
+/* ── The Actual Text ── */
+textbox {
+    /* Large, commanding font — the hero of the screen */
+    font:             "JetBrains Mono Bold 64";
+    horizontal-align: 0.5;   /* Center horizontally */
+    vertical-align:   0.5;   /* Center within textbox */
+    text-color:       @accent;
+    background-color: transparent;
+}
+
+/* ── Hide elements we don't need ── */
+inputbar,
+listview,
+sidebar,
+case-indicator,
+entry,
+prompt,
+num-filtered-rows,
+num-rows {
+    enabled: false;
+}
+

@@ -1,0 +1,49 @@
+{
+    "border": "pixel",
+    "current_border_width": 2,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 974,
+       "width": 919,
+       "x": 32,
+       "y": 32
+    },
+    "marks": [],
+    "name": "How To Program Your Keyboard With Code Instead Of QMK Configurator - YouTube - Brave",
+    "percent": 0.5,
+    "swallows": [
+       {
+       "class": "^Brave\\-browser$",
+       "instance": "^brave\\-browser$",
+       "machine": "^vbaswin$",
+       "title": "^How\\ To\\ Program\\ Your\\ Keyboard\\ With\\ Code\\ Instead\\ Of\\ QMK\\ Configurator\\ \\-\\ YouTube\\ \\-\\ Brave$",
+       "window_role": "^browser$"
+       }
+    ],
+    "type": "con"
+}
+
+{
+    "border": "pixel",
+    "current_border_width": 2,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 572,
+       "width": 820,
+       "x": 0,
+       "y": 0
+    },
+    "marks": [
+       "_i3_restore_focus"
+    ],
+    "name": "[Z] [3/3] ~/qmk_firmware",
+    "percent": 0.5,
+    "swallows": [
+       {
+       "class": "^org\\.wezfurlong\\.wezterm$",
+       "instance": "^org\\.wezfurlong\\.wezterm$",
+       "title": "^\\[Z\\]\\ \\[3\\/3\\]\\ \\~\\/qmk_firmware$"
+       }
+    ],
+    "type": "con"
+}
