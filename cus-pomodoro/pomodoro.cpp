@@ -195,19 +195,38 @@ void setup_handlers() {
 // POPUP DISPLAY
 // ============================================================================
 namespace Popup {
+std::string get_live_display() {
+    // Read i3's environment to get the real DISPLAY
+    FILE *fp = popen("cat /proc/$(pgrep -x i3 | head -1)/environ 2>/dev/null "
+                     "| tr '\\0' '\\n' | grep '^DISPLAY=' | cut -d= -f2",
+                     "r");
+    if (!fp)
+        return ":1"; // sensible fallback
+
+    char buf[64] = {};
+    if (fgets(buf, sizeof(buf), fp)) {
+        pclose(fp);
+        // Strip trailing newline
+        std::string display(buf);
+        if (!display.empty() && display.back() == '\n') {
+            display.pop_back();
+        }
+        return display.empty() ? ":1" : display;
+    }
+    pclose(fp);
+    return ":1"; // fallback
+}
 
 void show_completion_popup() {
-    std::string cmd = "rofi -e '☕ Break Time! Step away. Stretch. Breathe.' -theme $HOME/.config/rofi/pomodoro.rasi";
-    // std::string cmd = "rofi -e '☕ Break Time! Step away. Stretch. Breathe.'";
-    // std::string cmd = "rofi -e 'new'";
-
-    // "-theme-str 'textbox { text-color: #cdd6f4; horizontal-align: 0.5; }'";
+    const std::string display = get_live_display();
+    std::string cmd = "DISPLAY=" + display + " rofi -e '☕ Break Time! Step away. Stretch. Breathe.' -theme $HOME/.config/rofi/pomodoro.rasi";
 
     std::system(cmd.c_str());
 }
 // Separate function for second confirmation popup
 void show_confirmation_popup() {
-    std::string cmd = "rofi -e '☕ Break Time! Step away. Stretch. Breathe.' -theme $HOME/.config/rofi/pomodoro.rasi";
+    const std::string display = get_live_display();
+    std::string cmd = "DISPLAY=" + display + " rofi -e '☕ Break Time! Step away. Stretch. Breathe.' -theme $HOME/.config/rofi/pomodoro.rasi";
 
     std::system(cmd.c_str());
 }
@@ -264,10 +283,10 @@ void run() {
 
             // show both popups( escape twice)
             Popup::show_completion_popup();
-            Popup::show_confirmation_popup();
+            // Popup::show_confirmation_popup();
 
             // Send notification and restart
-            std::system("notify-send -u normal '🍅 Pomodoro' 'Break time!'");
+            // std::system("notify-send -u normal '🍅 Pomodoro' 'Break time!'");
 
             // Show popup (blocking)
             // Popup::show_completion_popup();
@@ -299,7 +318,7 @@ void run() {
                 Popup::show_completion_popup();
 
                 // Show blocking popup
-                Popup::show_confirmation_popup();
+                // Popup::show_confirmation_popup();
 
                 // Send notification that timer is restarting
                 std::system("notify-send -u normal '🍅 Pomodoro' 'Timer restarted!'");
