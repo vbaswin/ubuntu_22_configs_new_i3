@@ -35,6 +35,7 @@ constexpr int POMODORO_SECONDS = POMODORO_MINUTES * 60;
 // Polling interval - smaller = more responsive to signals
 constexpr int POLL_INTERVAL_MS = 100;
 constexpr int POLLS_PER_SECOND = 1000 / POLL_INTERVAL_MS; // 10
+constexpr int SUSPEND_THRESHOLD_SECONDS = 5;
 
 // File paths
 inline std::string get_state_file() {
@@ -245,14 +246,30 @@ bool interruptible_sleep_1s() {
         if (State::restart_requested.load() ||
             State::break_requested.load() ||
             State::shutdown_requested.load()) {
-            return false; // Interrupted
+            return false; // Interrupted by signal
         }
+
+        // Snapshot wall-clock BEFORE sleeping
+        const auto wall_before = std::chrono::system_clock::now();
+
         std::this_thread::sleep_for(
             std::chrono::milliseconds(Config::POLL_INTERVAL_MS));
-    }
-    return true; // Completed full second
-}
 
+        // Snapshot wall-clock AFTER sleeping
+        const auto wall_after = std::chrono::system_clock::now();
+        const auto wall_elapsed = std::chrono::duration_cast<
+                                      std::chrono::seconds>(wall_after - wall_before)
+                                      .count();
+
+        // If a 100ms sleep took 30+ seconds of wall time,
+        // the system was suspended. Signal a restart.
+        if (wall_elapsed >= Config::SUSPEND_THRESHOLD_SECONDS) {
+            State::restart_requested.store(true);
+            return false; // Break out — main loop will handle restart
+        }
+    }
+    return true; // Completed full second normally
+}
 void run() {
     FileIO::write_pid();
     Signals::setup_handlers();
@@ -331,8 +348,24 @@ void run() {
         } else {
             // In break state - wait for signal
             FileIO::write_state(false, 0);
+
+            // Same suspend detection as in interruptible_sleep_1s().
+            // Without this, closing the lid during break state
+            // would NOT auto-restart the timer on wake.
+            const auto wall_before = std::chrono::system_clock::now();
+
             std::this_thread::sleep_for(
                 std::chrono::milliseconds(Config::POLL_INTERVAL_MS));
+
+            const auto wall_after = std::chrono::system_clock::now();
+            const auto wall_elapsed = std::chrono::duration_cast<
+                                          std::chrono::seconds>(wall_after - wall_before)
+                                          .count();
+
+            if (wall_elapsed >= Config::SUSPEND_THRESHOLD_SECONDS) {
+                // Woke from suspend while in break — start a fresh timer
+                State::restart_requested.store(true);
+            }
         }
     }
 
