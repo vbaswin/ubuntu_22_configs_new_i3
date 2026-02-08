@@ -6,14 +6,12 @@ After=graphical-session.target
 [Service]
 Type=forking
 ExecStart=/home/vbaswin/.config/cus-pomodoro/pomodoro --daemon
+ExecStartPost=/bin/sleep 1
+ExecStartPost=/home/vbaswin/.config/cus-pomodoro/pomodoro --start
 ExecStop=/home/vbaswin/.config/cus-pomodoro/pomodoro --stop
 PIDFile=/tmp/pomodoro.pid
 Restart=on-failure
 RestartSec=5
-
-# Environment for rofi/display access
-Environment=DISPLAY=:0
-Environment=XAUTHORITY=/run/user/1000/gdm/Xauthority
 
 [Install]
 WantedBy=default.target   
