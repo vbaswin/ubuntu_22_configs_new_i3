@@ -270,6 +270,8 @@ void run() {
             State::timer_running.store(true);
             // Clear any pending break request since we're starting fresh
             State::break_requested.store(false);
+
+            std::system("notify-send -u normal '🍅 Pomodoro' 'Timer restarted!'");
         }
 
         // ============================================================
