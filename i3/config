@@ -195,8 +195,7 @@ bindsym $mod+Shift+g exec --no-startup-id python3 ~/.config/scripts/toggle_whisp
 bindsym $mod+shift+v exec --no-startup-id \
   rofi -modi "clipboard:greenclip print" -show clipboard
 
-
-exec --no-startup-id sh -c "i3-msg workspace $ws2; brave-browser & sleep 2; i3-msg workspace $ws1; exec --no-startup-id ~/.config/scripts/smart-kitty"
+exec --no-startup-id ~/.config/scripts/i3-startup.sh
 #
 # Waits for the script to finish, then switches workspace
 # exec --no-startup-id "/home/vbaswin/i3-restore/i3-restore; i3-msg workspace number 1"# --- ROFI POWERSAVE MENU ---
@@ -216,7 +215,7 @@ exec --no-startup-id sh -c "i3-msg workspace $ws2; brave-browser & sleep 2; i3-m
 
   exec --no-startup-id systemctl --user import-environment DISPLAY   
 
-exec --no-startup-id redshift -l 8.44:77.01 -t 4500:2500 -m randr -v
+# exec --no-startup-id redshift -l 8.44:77.01 -t 4500:2500 -m randr -v
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # Using brightnessctl (recommended alternative)

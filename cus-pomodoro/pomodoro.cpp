@@ -35,7 +35,7 @@ constexpr int POMODORO_SECONDS = POMODORO_MINUTES * 60;
 // Polling interval - smaller = more responsive to signals
 constexpr int POLL_INTERVAL_MS = 100;
 constexpr int POLLS_PER_SECOND = 1000 / POLL_INTERVAL_MS; // 10
-constexpr int SUSPEND_THRESHOLD_SECONDS = 5;
+constexpr int SUSPEND_THRESHOLD_SECONDS = 30;
 
 // File paths
 inline std::string get_state_file() {
