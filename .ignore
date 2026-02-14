@@ -1,0 +1,29 @@
+# 1. First, ignore ALL hidden files/directories (The Blanket Ban)
+.*
+
+# 2. Now, explicitly INCLUDE only the ones you want (The Whitelist)
+!.config/
+!.vscode/
+!.local/
+
+
+!.zshrc
+!.gitignore
+!.vimrc
+!.bashrc
+!.envrc
+!.editorconfig
+!.clang-format
+!.clang-tidy
+!.editorconfig
+!.env
+!.env.*
+!.dockerignore
+!.stylua.toml
+!.neoconf.json
+!.luarc.json
+!.vimrc.json
+!.justfile
+
+
+

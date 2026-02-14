@@ -3,6 +3,8 @@
 
 # 2. Keep the gitignore file itself
 !/.gitignore
+!/.ignore
+!/.zshrc
 
 # 3. Whitelist your config folders (Git will enter these and track everything inside)
 !/kitty/
@@ -22,6 +24,7 @@
 !/i3
 !/systemd/
 !/cus-pomodoro/
+!/.claude/
 
 
 
